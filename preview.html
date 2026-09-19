@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThrillStream — Movie Reviews</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#0b1016;color:#f4f4f4}
+header{padding:24px 7%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #26313d}
+.logo{font-size:25px;font-weight:800;letter-spacing:1px}.logo span{color:#e04b4b}
+nav a{color:#c8d0d8;text-decoration:none;margin-left:22px;font-size:14px}
+.hero{padding:60px 7%;background:linear-gradient(90deg,#0b1016 35%,#182936);min-height:330px}
+.hero h1{font-size:52px;max-width:650px;margin:10px 0}.hero p{color:#b8c1ca;max-width:600px;line-height:1.6}
+.search{display:flex;max-width:620px;margin-top:25px}.search input{flex:1;padding:15px;border:0;border-radius:8px 0 0 8px;font-size:15px}.search button{padding:15px 22px;border:0;background:#d94b4b;color:white;border-radius:0 8px 8px 0;font-weight:bold}
+section{padding:35px 7%}.section-title{display:flex;justify-content:space-between;align-items:center} .section-title h2{margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-top:22px}
+.card{background:#151e27;border:1px solid #25313c;border-radius:10px;overflow:hidden;cursor:pointer;transition:.2s}.card:hover{transform:translateY(-3px);border-color:#d94b4b}
+.poster{height:245px;overflow:hidden;background:#101820}.poster img{width:100%;height:100%;object-fit:cover;display:block}
+.card-info{padding:15px}.card-info h3{margin:0 0 6px;font-size:17px}.meta{color:#9da9b4;font-size:13px}.rating{margin-top:10px;color:#ffd166}
+.panel{display:none;background:#121a22;border:1px solid #2a3744;border-radius:12px;padding:25px;margin-top:25px}
+.panel.active{display:block}.close{float:right;background:none;border:0;color:#aaa;font-size:22px;cursor:pointer}
+.movie-title{font-size:34px;margin:5px 0}.movie-meta{color:#aab5bf;margin-bottom:15px}.description{line-height:1.6;color:#d0d7dd}
+.stars button{font-size:25px;background:none;border:0;color:#66717c;cursor:pointer}.stars button.on{color:#ffd166}
+textarea{width:100%;min-height:90px;background:#0b1016;color:white;border:1px solid #34414e;border-radius:8px;padding:12px;margin-top:12px}
+.review-btn{margin-top:10px;padding:11px 16px;border:0;border-radius:7px;background:#d94b4b;color:white;font-weight:bold;cursor:pointer}
+.review{padding:12px 0;border-bottom:1px solid #29343e}.review small{color:#8e9aa6}
+footer{padding:30px 7%;border-top:1px solid #26313d;color:#84909b;text-align:center}
+@media(max-width:650px){.hero h1{font-size:38px}nav{display:none}}
+</style>
+</head>
+<body>
+<header><div class="logo">THRILL<span>STREAM</span></div><nav><a href="#">Home</a><a href="#movies">Movies</a><a href="#community">Community</a></nav></header>
+
+<div class="hero">
+<h1>Discover. Rate. Review.</h1>
+<p>A focused movie review community for psychological thrillers released between 2000 and 2025.</p>
+<div class="search"><input id="search" placeholder="Search for a movie..." oninput="renderMovies()"><button onclick="renderMovies()">Search</button></div>
+</div>
+
+<section id="movies">
+<div class="section-title"><h2>Psychological Thrillers</h2><span id="count"></span></div>
+<div class="grid" id="grid"></div>
+<div class="panel" id="details"></div>
+</section>
+
+<section id="community"><h2>Community</h2><p style="color:#aeb8c1">A planned space for movie discussions and shared opinions. Community features will be developed in a later stage.</p></section>
+<footer>ThrillStream • Personal Project Prototype<br><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small></footer>
+
+<script>
+const movies=[["Inception",2010,"Christopher Nolan","A thief enters dreams to plant an idea.","8.8","https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg"],["Shutter Island",2010,"Martin Scorsese","A marshal investigates a mysterious disappearance on an isolated island.","8.2","https://image.tmdb.org/t/p/w500/nrmXQ0zcZUL8jFLrakWc90IR8z9.jpg"],["Black Swan",2010,"Darren Aronofsky","A dancer's pursuit of perfection becomes increasingly unsettling.","8.0","https://image.tmdb.org/t/p/w500/viWheBd44bouiLCHgNMvahLThqx.jpg"],["Gone Girl",2014,"David Fincher","A disappearance turns a marriage into a media mystery.","8.1","https://image.tmdb.org/t/p/w500/qymaJhucquUwjpb8oiqynMeXnID.jpg"],["Prisoners",2013,"Denis Villeneuve","A desperate search begins after two children disappear.","8.1","https://image.tmdb.org/t/p/w500/yAhqW57pwMAsCgmZpM5zSIVQVTh.jpg"],["The Prestige",2006,"Christopher Nolan","Two rival magicians become obsessed with their competition.","8.5","https://image.tmdb.org/t/p/w500/Ag2B2KHKQPukjH7WutmgnnSNurZ.jpg"],["Memento",2000,"Christopher Nolan","A man with short-term memory loss searches for answers.","8.4","https://image.tmdb.org/t/p/w500/fKTPH2WvH8nHTXeBYBVhawtRqtR.jpg"],["The Machinist",2004,"Brad Anderson","An exhausted worker begins questioning what is real.","7.6","https://en.wikipedia.org/wiki/Special:Redirect/file/The_Machinist_film_poster.jpg"],["Nightcrawler",2014,"Dan Gilroy","A freelance cameraman enters the world of crime journalism.","7.8","https://image.tmdb.org/t/p/w500/j9HrX8f7GbZQm1BrBiR40uFQZSb.jpg"],["Se7en",2000,"David Fincher","Two detectives investigate a series of disturbing crimes.","8.6","https://image.tmdb.org/t/p/w500/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg"],["Get Out",2017,"Jordan Peele","A weekend visit leads to increasingly strange discoveries.","7.8","https://image.tmdb.org/t/p/w500/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg"],["Split",2016,"M. Night Shyamalan","A kidnapping becomes a psychological struggle for survival.","7.3","https://image.tmdb.org/t/p/w500/rXMWOZiCt6eMX22jWuTOSdQ98bY.jpg"]];
+let selected=0, ratings={};
+function renderMovies(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const list=movies.filter(m=>m[0].toLowerCase().includes(q));
+ document.getElementById("count").textContent=list.length+" movies";
+ document.getElementById("grid").innerHTML=list.map((m)=>`<div class="card" onclick="openMovie(${movies.indexOf(m)})"><div class="poster"><img src="${m[5]}" alt="${m[0]} poster"></div><div class="card-info"><h3>${m[0]}</h3><div class="meta">${m[1]} • ${m[2]}</div><div class="rating">★ ${m[4]}/10</div></div></div>`).join("");
+}
+function openMovie(i){
+ selected=i; const m=movies[i]; const r=ratings[i]||0;
+ document.getElementById("details").classList.add("active");
+ document.getElementById("details").innerHTML=`<button class="close" onclick="closeMovie()">×</button>
+ <div class="movie-title">${m[0]}</div><div class="movie-meta">${m[1]} • Directed by ${m[2]} • Psychological Thriller</div>
+ <p class="description">${m[3]}</p><h3>Your rating</h3>
+ <div class="stars">${[1,2,3,4,5].map(n=>`<button class="${n<=r?'on':''}" onclick="rate(${n})">★</button>`).join("")}</div>
+ `;
+ document.getElementById("details").scrollIntoView({behavior:"smooth"});
+}
+function closeMovie(){document.getElementById("details").classList.remove("active")}
+function rate(n){ratings[selected]=n;openMovie(selected)}
+renderMovies();
+</script>
+</body>
+</html>
